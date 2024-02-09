@@ -3,17 +3,17 @@ import numpy as np
 
 # Load Yolo
 net = cv2.dnn.readNet('yolov3.weights', 'yolov3.cfg')
-classes = []
+
 with open('coco.names', 'r') as f:
     classes = [line.strip() for line in f.readlines()]
 layer_names = net.getLayerNames()
 # print(layer_names)
-outputLayers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+output_layers = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
 # print(outputLayers)
 colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
 # Load Image
-img = cv2.imread('sample_room.jpg')
+img = cv2.imread('./sample_images/sample_room.jpg')
 img = cv2.resize(img, None, fx=0.4, fy=0.4)
 height, width, channels = img.shape
 
@@ -27,7 +27,7 @@ for b in blob:
 '''
 
 net.setInput(blob)
-outs = net.forward(outputLayers)
+outs = net.forward(output_layers)
 
 # Showing Info on the screen
 class_ids = []
@@ -53,7 +53,7 @@ for out in outs:
             class_ids.append(class_id)
 
 indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.6, 0.4)
-print(indexes)
+
 font = cv2.FONT_HERSHEY_PLAIN
 
 for i in range(len(boxes)):
